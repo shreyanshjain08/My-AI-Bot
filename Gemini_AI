@@ -1,0 +1,60 @@
+import google.generativeai as genai
+from PIL import Image
+
+def setup_api():
+    
+    genai.configure(api_key="API_KEY")
+
+def generate_text(prompt):
+    model = genai.GenerativeModel('gemini-1.5-flash')
+    try:
+        response = model.generate_content(prompt)
+        return response.text
+    except Exception as e:
+        return f"An error occurred: {str(e)}"
+
+def generate_from_image(image_path, prompt=""):
+    model = genai.GenerativeModel('gemini-1.5-flash')
+    try:
+        image = Image.open(image_path)
+        if prompt:
+            response = model.generate_content([prompt, image])
+        else:
+            response = model.generate_content(image)
+        return response.text
+    except Exception as e:
+        return f"An error occurred: {str(e)}"
+
+def main():
+    print("Welcome to the Gemini LLM Demo")
+    setup_api()
+
+    while True:
+        print("\n1: Text Generation")
+        print("2: Image Analysis")
+        print("3: Quit")
+        
+        choice = input("Enter your choice (1/2/3): ")
+
+        if choice == '1':
+            prompt = input("Enter your text prompt: ")
+            response = generate_text(prompt)
+            print("\nGemini's response:")
+            print(response)
+
+        elif choice == '2':
+            image_path = input("Enter the path to your image file: ")
+            prompt = input("Enter an optional text prompt (or press Enter to skip): ")
+            response = generate_from_image(image_path, prompt)
+            print("\nGemini's response:")
+            print(response)
+
+        elif choice == '3':
+            print("Thank you for using the Gemini LLM Demo. Goodbye!")
+            break
+
+        else:
+            print("Invalid choice. Please try again.")
+
+if __name__ == "__main__":
+    main()
